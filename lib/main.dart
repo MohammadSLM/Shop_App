@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/Model/PageViewModel.dart';
 import 'package:dio/dio.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -20,6 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   late Future<List<PageViewModel>> pageViewFuture;
+  PageController pageController = PageController();
 
   @override
   void initState() {
@@ -45,15 +47,42 @@ class _HomePageState extends State<HomePage> {
           children: [
             Container(
               height: 250,
-              color: Colors.white,
               child: FutureBuilder<List<PageViewModel>>(
                 future: pageViewFuture,
                 builder: (context , snapshot){
                   if(snapshot.hasData){
-                    return Container(
-                      height: 200,
-                      color: Colors.red,
+                    List<PageViewModel>? model = snapshot.data;
 
+                    return Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        PageView.builder(
+                          controller: pageController,
+                          allowImplicitScrolling: true,
+                          itemCount: model?.length,
+                            itemBuilder: (context , position){
+                            return PageViewItems(model![position]);
+                            }
+                        ),
+                        Padding(
+                            padding: EdgeInsets.only(bottom: 5),
+                          child: SmoothPageIndicator(
+                            controller: pageController,
+                            count: model!.length,
+                            effect: ExpandingDotsEffect(
+                              dotWidth: 10,
+                              dotHeight: 10,
+                              spacing: 3,
+                              dotColor: Colors.white,
+                              activeDotColor: Colors.red
+                            ),
+                            onDotClicked: (index) =>
+                                pageController.animateToPage(index,
+                                    duration: Duration(microseconds: 500),
+                                    curve: Curves.bounceOut)
+                          ),
+                        ),
+                      ],
                     );
                   }else{
                     return Center(
@@ -84,5 +113,17 @@ class _HomePageState extends State<HomePage> {
     }
 
     return model;
+}
+
+Padding PageViewItems(PageViewModel pageViewModel) {
+    return Padding(
+      padding: EdgeInsets.only(top: 10, right: 5, left: 5, ),
+      child: Container(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+            child: Image.network(pageViewModel.imgUrl, fit: BoxFit.fill,)
+        ),
+      ),
+    );
 }
 }
