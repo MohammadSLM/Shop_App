@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/Model/PageViewModel.dart';
 import 'package:dio/dio.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:shop_app/Model/SpecialOfferModel.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 void main() {
@@ -21,6 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   late Future<List<PageViewModel>> pageViewFuture;
+  late Future<List<SpecialOfferModel>> specialOfferFuture;
   PageController pageController = PageController();
 
   @override
@@ -29,6 +31,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     pageViewFuture = SendRequestPageView();
+    specialOfferFuture = SendRequestSpecialOffer();
   }
   @override
   Widget build(BuildContext context) {
@@ -42,7 +45,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Container(
-        color: Colors.purple,
+        color: Colors.white,
         child: Column(
           children: [
             Container(
@@ -95,6 +98,61 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
+            Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: Container(
+                color: Colors.red,
+                height: 300,
+                child: FutureBuilder<List<SpecialOfferModel>>(
+                  future: specialOfferFuture,
+                  builder: (context , snapshot){
+                    if(snapshot.hasData){
+                      List<SpecialOfferModel>? model = snapshot.data;
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: model!.length,
+                          reverse: true,
+                          itemBuilder: (context , position){
+                          if(position == 0){
+                            return Container(
+                              height: 300,
+                              width: 200,
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 15, left: 10,right: 10),
+                                    child: Image.asset("images/box.png",height: 230,),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 5),
+                                    child: Expanded(
+                                      child: OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            side: BorderSide(color: Colors.white)),
+                                          onPressed: (){} ,
+                                          child: Text("مشاهده همه" , style: TextStyle(color: Colors.white,),)
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                          }else{
+                            return Container(
+                              width: 200,
+                            );
+                          }
+                          },
+                      );
+                    }else{
+                      return Container();
+                    }
+                  },
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -110,6 +168,20 @@ class _HomePageState extends State<HomePage> {
 
     for(var item in response.data['photos']){
       model.add(PageViewModel(item['id'], item['imgUrl']));
+    }
+
+    return model;
+}
+
+Future<List<SpecialOfferModel>> SendRequestSpecialOffer() async{
+    List<SpecialOfferModel> model = [];
+
+    var response = await Dio().get("http://mohammad.slm72.freehost.io/db2.json");
+
+    print(response);
+
+    for(var item in response.data['products']){
+      model.add(SpecialOfferModel(item['id'], item['product_name'], item['price'], item['off_price'], item['off_percent']));
     }
 
     return model;
