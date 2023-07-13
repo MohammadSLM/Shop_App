@@ -20,7 +20,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   late Future<List<PageViewModel>> pageViewFuture;
   late Future<List<SpecialOfferModel>> specialOfferFuture;
   PageController pageController = PageController();
@@ -33,6 +32,7 @@ class _HomePageState extends State<HomePage> {
     pageViewFuture = SendRequestPageView();
     specialOfferFuture = SendRequestSpecialOffer();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
         title: Text('Shop'),
         backgroundColor: Colors.red,
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.shopping_cart_outlined))
+          IconButton(onPressed: () {}, icon: Icon(Icons.shopping_cart_outlined))
         ],
       ),
       body: Container(
@@ -52,42 +52,39 @@ class _HomePageState extends State<HomePage> {
               height: 250,
               child: FutureBuilder<List<PageViewModel>>(
                 future: pageViewFuture,
-                builder: (context , snapshot){
-                  if(snapshot.hasData){
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
                     List<PageViewModel>? model = snapshot.data;
 
                     return Stack(
                       alignment: Alignment.bottomCenter,
                       children: [
                         PageView.builder(
-                          controller: pageController,
-                          allowImplicitScrolling: true,
-                          itemCount: model?.length,
-                            itemBuilder: (context , position){
-                            return PageViewItems(model![position]);
-                            }
-                        ),
-                        Padding(
-                            padding: EdgeInsets.only(bottom: 5),
-                          child: SmoothPageIndicator(
                             controller: pageController,
-                            count: model!.length,
-                            effect: ExpandingDotsEffect(
-                              dotWidth: 10,
-                              dotHeight: 10,
-                              spacing: 3,
-                              dotColor: Colors.white,
-                              activeDotColor: Colors.red
-                            ),
-                            onDotClicked: (index) =>
-                                pageController.animateToPage(index,
-                                    duration: Duration(microseconds: 500),
-                                    curve: Curves.bounceOut)
-                          ),
+                            allowImplicitScrolling: true,
+                            itemCount: model?.length,
+                            itemBuilder: (context, position) {
+                              return PageViewItems(model![position]);
+                            }),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 5),
+                          child: SmoothPageIndicator(
+                              controller: pageController,
+                              count: model!.length,
+                              effect: ExpandingDotsEffect(
+                                  dotWidth: 10,
+                                  dotHeight: 10,
+                                  spacing: 3,
+                                  dotColor: Colors.white,
+                                  activeDotColor: Colors.red),
+                              onDotClicked: (index) =>
+                                  pageController.animateToPage(index,
+                                      duration: Duration(microseconds: 500),
+                                      curve: Curves.bounceOut)),
                         ),
                       ],
                     );
-                  }else{
+                  } else {
                     return Center(
                       child: JumpingDotsProgressIndicator(
                         fontSize: 60,
@@ -105,48 +102,55 @@ class _HomePageState extends State<HomePage> {
                 height: 300,
                 child: FutureBuilder<List<SpecialOfferModel>>(
                   future: specialOfferFuture,
-                  builder: (context , snapshot){
-                    if(snapshot.hasData){
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
                       List<SpecialOfferModel>? model = snapshot.data;
 
                       return ListView.builder(
                         shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: model!.length,
-                          reverse: true,
-                          itemBuilder: (context , position){
-                          if(position == 0){
+                        scrollDirection: Axis.horizontal,
+                        itemCount: model!.length,
+                        reverse: true,
+                        itemBuilder: (context, position) {
+                          if (position == 0) {
                             return Container(
                               height: 300,
                               width: 200,
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 15, left: 10,right: 10),
-                                    child: Image.asset("images/box.png",height: 230,),
+                                    padding: const EdgeInsets.only(
+                                        top: 15, left: 10, right: 10),
+                                    child: Image.asset(
+                                      "images/box.png",
+                                      height: 230,
+                                    ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 5),
                                     child: Expanded(
                                       child: OutlinedButton(
                                           style: OutlinedButton.styleFrom(
-                                            side: BorderSide(color: Colors.white)),
-                                          onPressed: (){} ,
-                                          child: Text("مشاهده همه" , style: TextStyle(color: Colors.white,),)
-                                      ),
+                                              side: BorderSide(
+                                                  color: Colors.white)),
+                                          onPressed: () {},
+                                          child: Text(
+                                            "مشاهده همه",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          )),
                                     ),
                                   )
                                 ],
                               ),
                             );
-                          }else{
-                            return Container(
-                              width: 200,
-                            );
+                          } else {
+                            return SpecialOfferItem(model[position - 1]);
                           }
-                          },
+                        },
                       );
-                    }else{
+                    } else {
                       return Container();
                     }
                   },
@@ -159,43 +163,132 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<List<PageViewModel>> SendRequestPageView() async{
+  Container SpecialOfferItem(SpecialOfferModel specialOfferModel) {
+    return Container(
+      width: 200,
+      height: 300,
+      color: Colors.white,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Container(
+          width: 200,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.network(
+                  specialOfferModel.imgUrl,
+                  height: 150,
+                  fit: BoxFit.fill,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Text(specialOfferModel.productName),
+              ),
+              Expanded(
+                  child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10, left: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            specialOfferModel.offPrice.toString() + "T",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text(
+                            specialOfferModel.price.toString() + "T",
+                            style: TextStyle(
+                                fontSize: 15,
+                                decoration: TextDecoration.lineThrough),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                          padding: const EdgeInsets.only(right: 10, bottom: 10),
+                        child: Container(
+                          decoration: new BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.all(Radius.circular(10))
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Text(
+                                specialOfferModel.offPercent.toString() + "%",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              )
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<List<PageViewModel>> SendRequestPageView() async {
     List<PageViewModel> model = [];
 
     var response = await Dio().get("http://mohammad.slm72.freehost.io/db.json");
-    
+
     print(response);
 
-    for(var item in response.data['photos']){
+    for (var item in response.data['photos']) {
       model.add(PageViewModel(item['id'], item['imgUrl']));
     }
 
     return model;
-}
+  }
 
-Future<List<SpecialOfferModel>> SendRequestSpecialOffer() async{
+  Future<List<SpecialOfferModel>> SendRequestSpecialOffer() async {
     List<SpecialOfferModel> model = [];
 
-    var response = await Dio().get("http://mohammad.slm72.freehost.io/db2.json");
+    var response =
+        await Dio().get("http://mohammad.slm72.freehost.io/db2.json");
 
     print(response);
 
-    for(var item in response.data['products']){
-      model.add(SpecialOfferModel(item['id'], item['product_name'], item['price'], item['off_price'], item['off_percent']));
+    for (var item in response.data['products']) {
+      model.add(SpecialOfferModel(
+          item['id'],
+          item['product_name'],
+          item['imgUrl'],
+          item['price'],
+          item['off_price'],
+          item['off_percent']));
     }
 
     return model;
-}
+  }
 
-Padding PageViewItems(PageViewModel pageViewModel) {
+  Padding PageViewItems(PageViewModel pageViewModel) {
     return Padding(
-      padding: EdgeInsets.only(top: 10, right: 5, left: 5, ),
+      padding: EdgeInsets.only(
+        top: 10,
+        right: 5,
+        left: 5,
+      ),
       child: Container(
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-            child: Image.network(pageViewModel.imgUrl, fit: BoxFit.fill,)
-        ),
+            borderRadius: BorderRadius.circular(20),
+            child: Image.network(
+              pageViewModel.imgUrl,
+              fit: BoxFit.fill,
+            )),
       ),
     );
-}
+  }
 }
