@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/Model/EventModel.dart';
 import 'package:shop_app/Model/PageViewModel.dart';
 import 'package:dio/dio.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -22,6 +23,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late Future<List<PageViewModel>> pageViewFuture;
   late Future<List<SpecialOfferModel>> specialOfferFuture;
+  late Future<List<EventModel>> eventFuture;
   PageController pageController = PageController();
 
   @override
@@ -31,6 +33,7 @@ class _HomePageState extends State<HomePage> {
 
     pageViewFuture = SendRequestPageView();
     specialOfferFuture = SendRequestSpecialOffer();
+    eventFuture = SendRequestEvent();
   }
 
   @override
@@ -44,120 +47,187 @@ class _HomePageState extends State<HomePage> {
           IconButton(onPressed: () {}, icon: Icon(Icons.shopping_cart_outlined))
         ],
       ),
-      body: Container(
-        color: Colors.white,
-        child: Column(
-          children: [
-            Container(
-              height: 250,
-              child: FutureBuilder<List<PageViewModel>>(
-                future: pageViewFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    List<PageViewModel>? model = snapshot.data;
-
-                    return Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        PageView.builder(
-                            controller: pageController,
-                            allowImplicitScrolling: true,
-                            itemCount: model?.length,
-                            itemBuilder: (context, position) {
-                              return PageViewItems(model![position]);
-                            }),
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 5),
-                          child: SmoothPageIndicator(
-                              controller: pageController,
-                              count: model!.length,
-                              effect: ExpandingDotsEffect(
-                                  dotWidth: 10,
-                                  dotHeight: 10,
-                                  spacing: 3,
-                                  dotColor: Colors.white,
-                                  activeDotColor: Colors.red),
-                              onDotClicked: (index) =>
-                                  pageController.animateToPage(index,
-                                      duration: Duration(microseconds: 500),
-                                      curve: Curves.bounceOut)),
-                        ),
-                      ],
-                    );
-                  } else {
-                    return Center(
-                      child: JumpingDotsProgressIndicator(
-                        fontSize: 60,
-                        dotSpacing: 5,
-                      ),
-                    );
-                  }
-                },
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: Container(
-                color: Colors.red,
-                height: 300,
-                child: FutureBuilder<List<SpecialOfferModel>>(
-                  future: specialOfferFuture,
+      body: SingleChildScrollView(
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              Container(
+                height: 250,
+                child: FutureBuilder<List<PageViewModel>>(
+                  future: pageViewFuture,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      List<SpecialOfferModel>? model = snapshot.data;
+                      List<PageViewModel>? model = snapshot.data;
 
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: model!.length,
-                        reverse: true,
-                        itemBuilder: (context, position) {
-                          if (position == 0) {
-                            return Container(
-                              height: 300,
-                              width: 200,
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 15, left: 10, right: 10),
-                                    child: Image.asset(
-                                      "images/box.png",
-                                      height: 230,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 5),
-                                    child: Expanded(
-                                      child: OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                              side: BorderSide(
-                                                  color: Colors.white)),
-                                          onPressed: () {},
-                                          child: Text(
-                                            "مشاهده همه",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          )),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            );
-                          } else {
-                            return SpecialOfferItem(model[position - 1]);
-                          }
-                        },
+                      return Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          PageView.builder(
+                              controller: pageController,
+                              allowImplicitScrolling: true,
+                              itemCount: model?.length,
+                              itemBuilder: (context, position) {
+                                return PageViewItems(model![position]);
+                              }),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 5),
+                            child: SmoothPageIndicator(
+                                controller: pageController,
+                                count: model!.length,
+                                effect: ExpandingDotsEffect(
+                                    dotWidth: 10,
+                                    dotHeight: 10,
+                                    spacing: 3,
+                                    dotColor: Colors.white,
+                                    activeDotColor: Colors.red),
+                                onDotClicked: (index) =>
+                                    pageController.animateToPage(index,
+                                        duration: Duration(microseconds: 500),
+                                        curve: Curves.bounceOut)),
+                          ),
+                        ],
                       );
                     } else {
-                      return Container();
+                      return Center(
+                        child: JumpingDotsProgressIndicator(
+                          fontSize: 60,
+                          dotSpacing: 5,
+                        ),
+                      );
                     }
                   },
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: EdgeInsets.only(top: 10),
+                child: Container(
+                  color: Colors.red,
+                  height: 300,
+                  child: FutureBuilder<List<SpecialOfferModel>>(
+                    future: specialOfferFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        List<SpecialOfferModel>? model = snapshot.data;
+
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: model!.length,
+                          reverse: true,
+                          itemBuilder: (context, position) {
+                            if (position == 0) {
+                              return Container(
+                                height: 300,
+                                width: 200,
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 15, left: 10, right: 10),
+                                      child: Image.asset(
+                                        "images/box.png",
+                                        height: 230,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 5),
+                                      child: Expanded(
+                                        child: OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                                side: BorderSide(
+                                                    color: Colors.white)),
+                                            onPressed: () {},
+                                            child: Text(
+                                              "مشاهده همه",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            )),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              );
+                            } else {
+                              return SpecialOfferItem(model[position - 1]);
+                            }
+                          },
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
+                ),
+              ),
+              Container(
+                height: 500,
+                width: double.infinity,
+                child: FutureBuilder<List<EventModel>>(
+                  future: eventFuture,
+                  builder: (context , snapshot){
+                    print(snapshot.hasData);
+                    if(snapshot.hasData){
+                      List<EventModel>? model = snapshot.data;
+
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Container(
+                                  height: 150,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                                      child: Image.network(model![0].imgUrl, fit: BoxFit.fill, width: 195,))
+                                ),
+                                Container(
+                                    height: 150,
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                                        child: Image.network(model![1].imgUrl, fit: BoxFit.fill, width: 195,))
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Container(
+                                    height: 150,
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                                        child: Image.network(model![2].imgUrl, fit: BoxFit.fill, width: 195,))
+                                ),
+                                Container(
+                                    height: 150,
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                                        child: Image.network(model![3].imgUrl, fit: BoxFit.fill, width: 195,))
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      );
+                    }else{
+                      return Container(
+                        child: JumpingDotsProgressIndicator(
+                          fontSize: 60,
+                          dotSpacing: 5,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -221,7 +291,7 @@ class _HomePageState extends State<HomePage> {
                           child: Padding(
                             padding: const EdgeInsets.all(10),
                             child: Text(
-                                specialOfferModel.offPercent.toString() + "%",
+                                "${specialOfferModel.offPercent}%",
                               style: TextStyle(fontSize: 20),
                             ),
                           ),
@@ -239,6 +309,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Future<List<EventModel>> SendRequestEvent() async {
+    List<EventModel> models = [];
+
+    var response = await Dio().get("http://mohammad.slm72.freehost.io/db.json");
+
+    for(var item in response.data['photos']){
+      models.add(EventModel(item['imgUrl']));
+    }
+    print(models);
+    return models;
+  }
+
   Future<List<PageViewModel>> SendRequestPageView() async {
     List<PageViewModel> model = [];
 
@@ -246,7 +328,7 @@ class _HomePageState extends State<HomePage> {
 
     print(response);
 
-    for (var item in response.data['photos']) {
+    for (var item in response.data['photos']){
       model.add(PageViewModel(item['id'], item['imgUrl']));
     }
 
