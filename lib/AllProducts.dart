@@ -14,7 +14,7 @@ class _AllProductsState extends State<AllProducts> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.red,
-        title: Text("فروشگاه"),
+        title: Text("فروشگاه", style: TextStyle(fontFamily: "Vazir", fontSize: 25),),
         actions: [
           IconButton(onPressed: (){}, icon: Icon(Icons.map))
         ],

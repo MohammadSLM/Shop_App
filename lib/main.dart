@@ -144,6 +144,7 @@ class _HomePageState extends State<HomePage> {
                                             child: Text(
                                               "مشاهده همه",
                                               style: TextStyle(
+                                                fontFamily: "Vazir",
                                                 color: Colors.white,
                                               ),
                                             )),
@@ -257,7 +258,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 5),
-                child: Text(specialOfferModel.productName),
+                child: Text(specialOfferModel.productName,style: TextStyle(fontFamily: "Vazir", fontSize: 15),),
               ),
               Expanded(
                   child: Container(
