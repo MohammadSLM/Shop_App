@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/AllProducts.dart';
 import 'package:shop_app/Model/EventModel.dart';
 import 'package:shop_app/Model/PageViewModel.dart';
 import 'package:dio/dio.dart';
@@ -137,7 +138,9 @@ class _HomePageState extends State<HomePage> {
                                             style: OutlinedButton.styleFrom(
                                                 side: BorderSide(
                                                     color: Colors.white)),
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => AllProducts()));
+                                            },
                                             child: Text(
                                               "مشاهده همه",
                                               style: TextStyle(
