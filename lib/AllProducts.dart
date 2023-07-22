@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:shop_app/BottomNav.dart';
-
 import 'Model/SpecialOfferModel.dart';
+import 'package:shop_app/SingleProduct.dart';
 
 class AllProducts extends StatefulWidget {
   const AllProducts({Key? key}) : super(key: key);
@@ -50,7 +51,7 @@ class _AllProductsState extends State<AllProducts> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      children: List.generate(models!.length, (index) => GenerateItem(models[index])),
+                      children: List.generate(models!.length, (index) => GenerateItem(models[index],context)),
                   ),
                 );
               }else{
@@ -89,31 +90,36 @@ Future<List<SpecialOfferModel>> SendRequestSpecialOffer() async {
   return model;
 }
 
-Card GenerateItem(SpecialOfferModel model){
-  return Card(
-    shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(20))),
-    elevation: 10,
-    child: Center(
-      child: Column(
-        children: [
-          Container(
-            width: 90,
-            height: 90,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: Image.network(model.imgUrl),
+InkWell GenerateItem(SpecialOfferModel model, context){
+  return InkWell(
+    onTap: (){
+      Navigator.push(context , MaterialPageRoute(builder: (context) => SingleProduct(model)));
+    },
+    child: Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20))),
+      elevation: 10,
+      child: Center(
+        child: Column(
+          children: [
+            Container(
+              width: 90,
+              height: 90,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Image.network(model.imgUrl),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: Text(model.productName),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 15.0),
-            child: Text(model.price.toString()),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: Text(model.productName),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: Text(model.price.toString()),
+            ),
+          ],
+        ),
       ),
     ),
   );
