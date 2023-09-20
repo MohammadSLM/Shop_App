@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/Model/SpecialOfferModel.dart';
 
 class SingleProduct extends StatelessWidget {
@@ -36,7 +37,9 @@ class SingleProduct extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                           ),
-                            onPressed: (){},
+                            onPressed: (){
+                            SaveDataToSP();
+                            },
                             child: Text("Add To Cart"),
                         )),
                   )),
@@ -45,5 +48,21 @@ class SingleProduct extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> SaveDataToSP() async{
+    List<String> imgUrls = [];
+    List<String> productTitles = [];
+    List<String> productPrice = [];
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    imgUrls.add(specialOfferModel.imgUrl);
+    productTitles.add(specialOfferModel.productName);
+    productPrice.add(specialOfferModel.price.toString());
+    
+    prefs.setStringList("imgUrls", imgUrls);
+    prefs.setStringList("productTitles", productTitles);
+    prefs.setStringList("productPrice", productPrice);
   }
 }
