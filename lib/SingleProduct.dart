@@ -3,12 +3,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/Model/SpecialOfferModel.dart';
 
 class SingleProduct extends StatelessWidget {
+  List<String> imgUrls = [];
+  List<String> productTitles = [];
+  List<String> productPrice = [];
+
   SpecialOfferModel specialOfferModel;
 
   SingleProduct(this.specialOfferModel);
 
   @override
   Widget build(BuildContext context) {
+    getDataDromPrefs();
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -50,11 +55,17 @@ class SingleProduct extends StatelessWidget {
     );
   }
 
-  Future<void> SaveDataToSP() async{
-    List<String> imgUrls = [];
-    List<String> productTitles = [];
-    List<String> productPrice = [];
+Future<void> getDataDromPrefs() async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
 
+  imgUrls = prefs.getStringList("imgUrls") ?? [];
+  productTitles = prefs.getStringList("productTitles") ?? [];
+  productPrice = prefs.getStringList("productPrice") ?? [];
+
+  print(productTitles.length);
+}
+
+  Future<void> SaveDataToSP() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     imgUrls.add(specialOfferModel.imgUrl);
